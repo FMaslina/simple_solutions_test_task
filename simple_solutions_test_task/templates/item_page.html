@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Model Detail</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .content {
+            display: inline-block;
+            text-align: left;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <p>Название: {{ item.name }}</p>
+        <p>Описание: {{ item.description }}</p>
+        <p>Цена: {{ item.price }}</p>
+    </div>
+    <div class="button-container">
+        <button id="buyButton">Купить</button>
+    </div>
+
+    <script>
+        var stripe = Stripe('pk_test_51ORpzDKmJF1wZ1wlLW3gxbG323oCSzb3GvnhEDqfGePbbqg7Bl4wmt8oTFOf7tUKnZTza8LiEMqO8NJKpiDG7tBY00s3cwe9e0');
+        var buyButton = document.getElementById('buyButton');
+
+        buyButton.addEventListener('click', function () {
+            fetch('/api/v1/buy/{{ item.id }}/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(session => {
+                if (session.url) {
+                    var absoluteURL = new URL(session.url, window.location.origin);
+                    window.location.href = absoluteURL.href;
+                } else {
+                    console.error('Error: URL is not defined in the response.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
