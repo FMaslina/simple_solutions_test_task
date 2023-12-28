@@ -1,7 +1,11 @@
+import os
 import stripe
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
-stripe.api_key = "sk_test_51ORpzDKmJF1wZ1wl48hIxBZivBiKUuQNxeuazfBbFKKig4b7Q1UOPYQvM8waZOtBhSuArrwVb0lximmvc3UWMf3f00cBhtWXn6"
+stripe.api_key = os.getenv("API_KEY")
 
 
 def stripe_session_create(obj):
