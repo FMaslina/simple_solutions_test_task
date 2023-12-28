@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+from django.shortcuts import get_object_or_404, render
+from django.views import View
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView, CreateAPIView
 from rest_framework.response import Response
@@ -23,3 +25,13 @@ class GetStripeSessionIdView(RetrieveAPIView):
 class CreateItem(CreateAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemModelSerializer
+
+
+class GetItem(View):
+    template_name = 'item_page.html'
+
+    def get(self, request, id, *args, **kwargs):
+        item_obj = get_object_or_404(Item, id=id)
+        context = {'item': item_obj}
+
+        return render(request, self.template_name, context)
